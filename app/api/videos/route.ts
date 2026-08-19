@@ -26,9 +26,9 @@ export async function POST(request: Request) {
   const form = await request.formData();
   const file = form.get("file");
   const title = String(form.get("title") || "").trim();
-  const category = String(form.get("category") || "产品演示").trim();
-  if (!(file instanceof File) || !file.type.startsWith("video/") || !title) return Response.json({ error: "请选择有效的视频并填写标题" }, { status: 400 });
-  if (file.size > 500 * 1024 * 1024) return Response.json({ error: "视频不能超过 500MB" }, { status: 413 });
+  const category = String(form.get("category") || "Product Demonstration").trim();
+  if (!(file instanceof File) || !file.type.startsWith("video/") || !title) return Response.json({ error: "Please select a valid video and enter a title." }, { status: 400 });
+  if (file.size > 500 * 1024 * 1024) return Response.json({ error: "The video must not exceed 500 MB." }, { status: 413 });
   const id = crypto.randomUUID();
   const key = `videos/${id}`;
   await runtime.VIDEOS.put(key, file.stream(), { httpMetadata: { contentType: file.type } });

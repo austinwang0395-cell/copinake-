@@ -13,17 +13,17 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "商用厨房设备产品中心｜COPINA",
-  description: "COPINA 商用厨房设备产品目录，支持分类浏览、在线下单与询价。",
+  title: "Commercial Kitchen Equipment & Restaurant Design | COPINA",
+  description: "COPINA supplies professional commercial kitchen equipment, restaurant design, installation guidance and after-sales support for Saudi Arabia, the UAE and Africa.",
   openGraph: {
-    title: "专业厨房设备，为高效运营而生。",
-    description: "COPINA 商用厨房设备产品中心",
+    title: "Professional Kitchen Solutions for Efficient Operations | COPINA",
+    description: "Commercial kitchen design, professional equipment supply, installation guidance and after-sales support.",
     images: ["/og.png"],
   },
   twitter: {
     card: "summary_large_image",
-    title: "专业厨房设备，为高效运营而生。",
-    description: "COPINA 商用厨房设备产品中心",
+    title: "Professional Kitchen Solutions for Efficient Operations | COPINA",
+    description: "Commercial kitchen design, professional equipment supply, installation guidance and after-sales support.",
     images: ["/og.png"],
   },
   icons: {
@@ -38,7 +38,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN">
+    <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
