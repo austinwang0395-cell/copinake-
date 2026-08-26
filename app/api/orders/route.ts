@@ -1,4 +1,11 @@
-import { env } from "cloudflare:workers";
-type OrderEnv={DB:D1Database}; const runtime=env as unknown as OrderEnv;
-async function ensureTable(){await runtime.DB.prepare(`CREATE TABLE IF NOT EXISTS product_orders (id TEXT PRIMARY KEY,customer_name TEXT NOT NULL,phone TEXT NOT NULL,company TEXT,note TEXT,items_json TEXT NOT NULL,total REAL NOT NULL,status TEXT NOT NULL,created_at INTEGER NOT NULL)`).run()}
-export async function POST(request:Request){await ensureTable();const body=await request.json() as {customer?:{name?:string;phone?:string;company?:string;note?:string};items?:unknown[];total?:number};if(!body.customer?.name?.trim()||!body.customer?.phone?.trim()||!Array.isArray(body.items)||body.items.length===0)return Response.json({error:"Please enter a contact name and phone number, then select at least one product."},{status:400});const id=`CP${new Date().toISOString().slice(2,10).replaceAll("-","")}-${crypto.randomUUID().slice(0,6).toUpperCase()}`;await runtime.DB.prepare("INSERT INTO product_orders (id, customer_name, phone, company, note, items_json, total, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").bind(id,body.customer.name.trim(),body.customer.phone.trim(),body.customer.company||"",body.customer.note||"",JSON.stringify(body.items),Number(body.total||0),"new",Date.now()).run();return Response.json({orderId:id},{status:201})}
+type OrderBody={customer?:{name?:string;phone?:string;company?:string;note?:string};items?:unknown[];total?:number};
+export async function POST(request:Request){
+ const body=await request.json() as OrderBody;
+ if(!body.customer?.name?.trim()||!body.customer?.phone?.trim()||!Array.isArray(body.items)||body.items.length===0)return Response.json({error:"Please enter a contact name and phone number, then select at least one product."},{status:400});
+ const orderId=`CP${new Date().toISOString().slice(2,10).replaceAll("-","")}-${crypto.randomUUID().slice(0,6).toUpperCase()}`;
+ const order={orderId,...body,createdAt:new Date().toISOString()};
+ const webhook=process.env.ORDER_WEBHOOK_URL;
+ if(webhook){const response=await fetch(webhook,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(order)});if(!response.ok)return Response.json({error:"Submission failed. Please try again."},{status:502})}
+ else console.info("COPINA order enquiry",JSON.stringify(order));
+ return Response.json({orderId},{status:201});
+}
